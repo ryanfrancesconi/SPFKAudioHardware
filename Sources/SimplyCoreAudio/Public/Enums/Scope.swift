@@ -30,7 +30,7 @@ public enum Scope {
 
     /// The wildcard value for AudioObjectPropertySelectors
     case wildcard
-    
+
     /// The AudioObjectPropertyElement value for properties that apply to the main
     /// element or to the entire scope.
     case main
@@ -65,6 +65,23 @@ extension Scope {
             // only case should be if Apple adds a new scope type - which seems fairly
             // unlikely
             return .wildcard
+        }
+    }
+
+    public var title: String {
+        switch self {
+        case .input:
+            return "Input"
+        case .output:
+            return "Output"
+        case .global:
+            return "Global"
+        case .playthrough:
+            return "Playthrough"
+        case .main:
+            return "Main"
+        case .wildcard:
+            return "Wildcard"
         }
     }
 }
