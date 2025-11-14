@@ -163,10 +163,10 @@ private func propertyListener(objectID: UInt32,
         // Obtain added and removed devices.
         var addedDevices: [AudioDevice]!
         var removedDevices: [AudioDevice]!
-        
+
         _self.queue.sync {
             let latestDeviceList = _self.allDevices
-            
+
             addedDevices = latestDeviceList.filter { !_self.allKnownDevices.contains($0) }
             removedDevices = _self.allKnownDevices.filter { !latestDeviceList.contains($0) }
         }
@@ -175,18 +175,22 @@ private func propertyListener(objectID: UInt32,
         _self.updateKnownDevices(adding: addedDevices, andRemoving: removedDevices)
 
         // Generate notification containing added & removed devices as `userInfo`.
-        let userInfo: [AnyHashable: AnyHashable] = [
+        let userInfo: [String: [AudioDevice]] = [
             "addedDevices": addedDevices,
             "removedDevices": removedDevices,
         ]
 
         DispatchQueue.main.async { notificationCenter.post(name: .deviceListChanged, object: _self, userInfo: userInfo) }
+
     case kAudioHardwarePropertyDefaultInputDevice:
         DispatchQueue.main.async { notificationCenter.post(name: .defaultInputDeviceChanged, object: _self) }
+
     case kAudioHardwarePropertyDefaultOutputDevice:
         DispatchQueue.main.async { notificationCenter.post(name: .defaultOutputDeviceChanged, object: _self) }
+
     case kAudioHardwarePropertyDefaultSystemOutputDevice:
         DispatchQueue.main.async { notificationCenter.post(name: .defaultSystemOutputDeviceChanged, object: _self) }
+
     default:
         break
     }
