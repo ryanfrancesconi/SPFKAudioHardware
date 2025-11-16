@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "DDC19F2A-7328-433D-9F6D-A049E3818819",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SPFKAudioHardwareTests",
+        "name" : "SPFKAudioHardwareTests"
+      }
+    }
+  ],
+  "version" : 1
+}

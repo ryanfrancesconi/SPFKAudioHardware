@@ -6,7 +6,7 @@ import PackageDescription
 // This package is C / Objective-C interoperability
 
 // Swift target
-private let name: String = "SimplyCoreAudio"
+private let name: String = "SPFKAudioHardware"
 
 // C/C++ target
 private let nameC: String = "\(name)C"
