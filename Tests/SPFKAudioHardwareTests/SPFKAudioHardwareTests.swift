@@ -8,16 +8,11 @@ import Testing
 
 @Suite(.serialized)
 class AudioHardwareManagerTests: NullDeviceTestCase {
-//    @Test func lifecycle() async throws {
-//        Log.debug(await hardwareManager.allDevices)
-//
-//        try await wait(sec: 2)
-//
-//        await hardwareManager.dispose()
-//        Log.debug(await hardwareManager.allDevices)
-//
-//        try await wait(sec: 5)
-//    }
+    @Test func allDevices() async throws {
+        let allDevices = await hardwareManager.allDevices
+
+        Log.debug("Found", allDevices.count, "devices: ", allDevices)
+    }
 
     @Test func multipleInstances() async throws {
         var hm1: AudioHardwareManager? = await AudioHardwareManager()

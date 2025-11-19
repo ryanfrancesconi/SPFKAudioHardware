@@ -58,7 +58,9 @@ extension NullDeviceTestCase {
     func createAggregateDevice(in delay: TimeInterval = 0) async throws -> AudioDevice? {
         let nullDevice = try #require(nullDevice)
 
-        if let existing = await hardwareManager.allDevices.first(where: {
+        let allDevices = await hardwareManager.allDevices
+
+        if let existing = allDevices.first(where: {
             $0.uid == Self.aggregateDeviceUID
         }) {
             Log.error("Device exists attempting to remove it...")
@@ -66,9 +68,8 @@ extension NullDeviceTestCase {
             #expect(noErr == hardwareManager.removeAggregateDevice(id: existing.id))
         }
 
-        // make sure this happens after the notification handlers are in place
         if delay > 0 {
-            try await Task.sleep(for: .seconds(delay))
+            try await Task.sleep(seconds: delay)
         }
 
         return try await hardwareManager.createAggregateDevice(
