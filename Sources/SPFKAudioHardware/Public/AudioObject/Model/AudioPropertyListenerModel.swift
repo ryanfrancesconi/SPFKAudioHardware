@@ -5,7 +5,7 @@ import CoreAudio
 import Foundation
 import SPFKBase
 
-protocol AudioPropertyListenerModel: AudioObjectModel {
+public protocol AudioPropertyListenerModel: AudioObjectModel {
     var notificationType: any PropertyAddressNotification.Type { get }
 }
 

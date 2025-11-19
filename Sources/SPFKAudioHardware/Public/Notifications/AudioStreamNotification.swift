@@ -4,22 +4,22 @@
 import CoreAudio.AudioHardware
 import Foundation
 
-public enum AudioStreamNotification: Hashable {
+public enum AudioStreamNotification: Hashable, Sendable {
     /// Called whenever the audio stream `isActive` flag changes.
-    case streamIsActiveDidChange
+    case streamIsActiveDidChange(objectID: AudioObjectID)
 
     /// Called whenever the audio stream physical format changes.
-    case streamPhysicalFormatDidChange
+    case streamPhysicalFormatDidChange(objectID: AudioObjectID)
 }
 
 extension AudioStreamNotification: PropertyAddressNotification {
-    public init?(propertyAddress: AudioObjectPropertyAddress) {
+    public init?(objectID: AudioObjectID, propertyAddress: AudioObjectPropertyAddress) {
         switch propertyAddress.mSelector {
         case kAudioStreamPropertyIsActive:
-            self = .streamIsActiveDidChange
+            self = .streamIsActiveDidChange(objectID: objectID)
 
         case kAudioStreamPropertyPhysicalFormat:
-            self = .streamPhysicalFormatDidChange
+            self = .streamPhysicalFormatDidChange(objectID: objectID)
 
         default:
             return nil

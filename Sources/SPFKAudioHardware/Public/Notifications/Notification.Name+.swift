@@ -95,6 +95,6 @@ public extension Notification.Name {
 
 private extension Notification.Name {
     init(_ name: String) {
-        self.init(rawValue: "SimplyCoreAudio.\(name)")
+        self.init(rawValue: "SPFKAudioHardware.\(name)")
     }
 }

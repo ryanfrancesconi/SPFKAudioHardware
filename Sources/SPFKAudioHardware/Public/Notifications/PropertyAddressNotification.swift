@@ -4,8 +4,8 @@
 import CoreAudio.AudioHardware
 import Foundation
 
-public protocol PropertyAddressNotification {
+public protocol PropertyAddressNotification: Hashable, Sendable {
     var name: Notification.Name { get }
 
-    init?(propertyAddress: AudioObjectPropertyAddress)
+    init?(objectID: AudioObjectID, propertyAddress: AudioObjectPropertyAddress)
 }

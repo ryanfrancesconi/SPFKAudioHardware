@@ -9,8 +9,8 @@ import SPFKBase
 /// This class represents an audio device managed by [Core Audio](https://developer.apple.com/documentation/coreaudio).
 ///
 /// Devices may be physical or virtual. For a comprehensive list of supported types, please refer to `TransportType`.
-public final class AudioDevice: AudioPropertyListenerModel {
-    var notificationType: any PropertyAddressNotification.Type { AudioDeviceNotification.self }
+public final class AudioDevice: AudioPropertyListenerModel, Sendable {
+    public var notificationType: any PropertyAddressNotification.Type { AudioDeviceNotification.self }
 
     // MARK: - Static Private Properties
 
@@ -22,7 +22,7 @@ public final class AudioDevice: AudioPropertyListenerModel {
         kAudioEndPointDeviceClassID,
     ]
 
-    private var _deviceName: String?
+    nonisolated(unsafe) private var _deviceName: String = ""
 
     public static func isSupported(classID: AudioClassID) -> Bool {
         Self.supportedClassIDs.contains(classID)
@@ -30,14 +30,14 @@ public final class AudioDevice: AudioPropertyListenerModel {
 
     // MARK: - Requirements
 
-    public var objectID: AudioObjectID
+    public let objectID: AudioObjectID
 
     /// Initializes an `AudioDevice` by providing a valid audio device identifier.
     ///
     /// - Parameter id: An audio device identifier.
     public init(objectID: AudioObjectID) async throws {
         self.objectID = objectID
-
+        
         guard let classID else {
             throw NSError(description: "classID is nil")
         }
@@ -45,8 +45,9 @@ public final class AudioDevice: AudioPropertyListenerModel {
         guard Self.supportedClassIDs.contains(classID) else {
             throw NSError(description: "Unknown classID (\(classID.fourCharCodeToString() ?? "\(classID)"))")
         }
+        
+        _deviceName = self.objectName ?? "<Unknown Device Name>"
 
-        _deviceName = self.name
     }
 
     // MARK: - AudioObject Overrides
@@ -54,7 +55,7 @@ public final class AudioDevice: AudioPropertyListenerModel {
     /// The audio device's name as reported by Core Audio.
     ///
     /// - Returns: An audio device's name.
-    public var name: String { objectName ?? _deviceName ?? "<Unknown Device Name>" }
+    public var name: String { _deviceName }
 }
 
 extension AudioDevice: CustomStringConvertible {

@@ -10,20 +10,20 @@ import Testing
 @Suite(.serialized)
 final class AudioHardwareTests: NullDeviceTestCase {
     @Test func createAndDestroyAggregateDevice() async throws {
-        let device = try #require(try await createAggregateDevice(in: 1))
+        let device = try #require(try await createAggregateDevice(in: 0))
 
-        try await Task.sleep(for: .seconds(1))
+        // try await wait(sec: 1)
 
         let isAggregateDevice = await device.isAggregateDevice
 
         #expect(isAggregateDevice)
         await #expect(device.ownedAggregateDevices?.count == 1)
 
-        try await wait(sec: 1)
+        // try await wait(sec: 1)
 
-        #expect(noErr == hardware.removeAggregateDevice(id: device.id))
+        #expect(noErr == hardwareManager.removeAggregateDevice(id: device.id))
 
-        try await wait(sec: 1)
+        // try await wait(sec: 1)
 
         try await tearDown()
     }
@@ -48,7 +48,7 @@ final class AudioHardwareTests: NullDeviceTestCase {
         #expect(try await task.value)
         task.cancel()
 
-        #expect(noErr == hardware.removeAggregateDevice(id: device.id))
+        #expect(noErr == hardwareManager.removeAggregateDevice(id: device.id))
 
         try await tearDown()
     }
@@ -62,7 +62,7 @@ final class AudioHardwareTests: NullDeviceTestCase {
 
         await #expect(AudioDevice.defaultDevice(of: selectorType) == aggregateDevice)
 
-        #expect(noErr == hardware.removeAggregateDevice(id: aggregateDevice.id))
+        #expect(noErr == hardwareManager.removeAggregateDevice(id: aggregateDevice.id))
 
         try await tearDown()
     }

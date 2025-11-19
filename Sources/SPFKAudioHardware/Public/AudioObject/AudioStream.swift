@@ -8,45 +8,25 @@ import SPFKBase
 
 /// This class represents an audio stream that belongs to an audio object managed by
 /// [Core Audio](https://developer.apple.com/documentation/coreaudio).
-public final class AudioStream: AudioPropertyListenerModel {
-    var notificationType: any PropertyAddressNotification.Type { AudioStreamNotification.self }
+public final class AudioStream: AudioPropertyListenerModel, Sendable {
+    public var notificationType: any PropertyAddressNotification.Type { AudioStreamNotification.self }
 
     // MARK: - Requirements
 
-    public private(set) var objectID: AudioObjectID
+    public let objectID: AudioObjectID
 
     /// Initializes an `AudioStream` by providing a valid `AudioObjectID` referencing an existing audio stream.
     public init(objectID: AudioObjectID) async throws {
         self.objectID = objectID
 
-        guard let classID else {
-            throw NSError(description: "classID is nil")
-        }
-        
         guard isAudioStream else {
             return
         }
-        
+
         guard (try? await owningObject()) != nil else {
             throw NSError(description: "owningObject can't be nil")
         }
     }
-
-    /// All the available physical formats for this audio stream.
-    ///
-    /// - SeeAlso: `availableVirtualFormats`
-    /// - Returns: *(optional)* An array of `AudioStreamRangedDescription` structs.
-    public lazy var availablePhysicalFormats: [AudioStreamRangedDescription]? = {
-        getAvailablePhysicalFormats()
-    }()
-
-    /// All the available virtual formats for this audio stream.
-    ///
-    /// - SeeAlso: `availablePhysicalFormats`
-    /// - Returns: *(optional)* An array of `AudioStreamRangedDescription` structs.
-    public lazy var availableVirtualFormats: [AudioStreamRangedDescription]? = {
-        getAvailableVirtualFormats()
-    }()
 }
 
 // MARK: - Public Functions

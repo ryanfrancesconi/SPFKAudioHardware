@@ -44,9 +44,11 @@ actor AudioDeviceCache {
 
 extension AudioDeviceCache {
     func unregister() async throws {
-        let allDevices = await allDevices
+        Log.debug("unregister", cachedDevices.count, "devices")
 
-        Log.debug("unregister", allDevices.count, "devices")
+        try await stop()
+
+        cachedDevices.removeAll()
 
         try await AudioObjectPool.shared.removeAll()
     }
@@ -77,11 +79,14 @@ extension AudioDeviceCache {
         cachedDevices.append(contentsOf: devices.addedDevices)
         cachedDevices.removeAll { devices.removedDevices.contains($0) }
 
+        Log.debug("Removing", devices.removedDevices.count, "devices...")
         for device in devices.removedDevices {
             try await AudioObjectPool.shared.remove(device.id)
         }
 
-        await AudioObjectPool.shared.startListening()
+        if cachedDevices.count > 0 {
+            await AudioObjectPool.shared.startListening()
+        }
     }
 
     func start() async throws {

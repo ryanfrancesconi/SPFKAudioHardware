@@ -64,12 +64,12 @@ public final class AudioHardwareManager {
 
         if Self.instances.load(ordering: .acquiring) == 0 {
             do {
+                await Self.sharedHardware.stopListening()
+
                 try await Self.sharedHardware.cache.unregister()
             } catch {
                 Log.error(error)
             }
-            
-            await Self.sharedHardware.stopListening()
 
             Self.sharedHardware = nil
 

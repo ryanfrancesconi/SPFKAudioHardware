@@ -125,7 +125,11 @@ extension AudioStream {
 }
 
 extension AudioStream {
-    func getAvailablePhysicalFormats() -> [AudioStreamRangedDescription]? {
+    /// All the available physical formats for this audio stream.
+    ///
+    /// - SeeAlso: `availableVirtualFormats`
+    /// - Returns: *(optional)* An array of `AudioStreamRangedDescription` structs.
+    public var availablePhysicalFormats: [AudioStreamRangedDescription]? {
         guard let scope else { return nil }
 
         var address = AudioObjectPropertyAddress(
@@ -144,7 +148,11 @@ extension AudioStream {
         return asrd
     }
 
-    func getAvailableVirtualFormats() -> [AudioStreamRangedDescription]? {
+    /// All the available virtual formats for this audio stream.
+    ///
+    /// - SeeAlso: `availablePhysicalFormats`
+    /// - Returns: *(optional)* An array of `AudioStreamRangedDescription` structs.
+    public var availableVirtualFormats: [AudioStreamRangedDescription]? {
         guard let scope else { return nil }
 
         var address = AudioObjectPropertyAddress(

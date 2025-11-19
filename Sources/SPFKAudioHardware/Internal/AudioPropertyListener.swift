@@ -54,7 +54,8 @@ class AudioPropertyListener: NSObject {
 
 extension AudioPropertyListener: SPFKAudioHardwareC.PropertyListenerDelegate {
     func propertyListener(_ propertyListener: PropertyListener, eventReceived propertyAddress: AudioObjectPropertyAddress) {
-        guard let notification = notificationType.init(propertyAddress: propertyAddress) else { return }
+        guard let notification = notificationType.init(objectID: objectID, propertyAddress: propertyAddress) else { return }
+        
         send(notification: notification)
     }
 

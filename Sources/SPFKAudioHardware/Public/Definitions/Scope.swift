@@ -8,7 +8,7 @@ import Foundation
 ///
 /// Please notice that `AudioStream` only supports `input` and `output` scopes,
 /// whether as `AudioDevice` may, additionally, support `global` and `playthrough`.
-public enum Scope {
+public enum Scope: Sendable {
     /// The AudioObjectPropertyScope for properties that apply to the object as a
     /// whole. All objects have a global scope and for most it is their only scope.
     case global

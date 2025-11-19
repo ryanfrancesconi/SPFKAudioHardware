@@ -12,8 +12,9 @@ final class AudioDeviceAsyncTests: NullDeviceTestCase {
         let nullDevice = try #require(nullDevice)
 
         try await nullDevice.update(sampleRate: targetSampleRate)
+
         #expect(targetSampleRate == nullDevice.nominalSampleRate)
-        
+
         try await tearDown()
     }
 }

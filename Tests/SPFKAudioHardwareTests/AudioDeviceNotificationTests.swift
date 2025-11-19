@@ -8,43 +8,11 @@ import Testing
 
 @Suite(.serialized)
 final class AudioDeviceNotificationTests: NullDeviceTestCase {
-    @Test(arguments: [48000])
-    func sampleRateDidChangeNotification(targetSampleRate: Float64) async throws {
-        let nullDevice = try #require(nullDevice)
-
-        let nominalSampleRates = try #require(nullDevice.nominalSampleRates)
-
-        #expect(nominalSampleRates.contains(targetSampleRate))
-
-        let task = Task<Float64?, Error> {
-            let notification: Notification = try await NotificationCenter.wait(for: .deviceNominalSampleRateDidChange)
-
-            let id: AudioObjectID = try #require(notification.userInfo?["id"] as? AudioObjectID)
-            let device: AudioDevice = try #require(await AudioDevice.lookup(by: id))
-
-            return device.nominalSampleRate
-        }
-
-        nullDevice.setNominalSampleRate(targetSampleRate)
-
-        let result = await task.result
-
-        switch result {
-        case let .success(newSampleRate):
-            #expect(targetSampleRate == newSampleRate)
-
-        case let .failure(error):
-            throw error
-        }
-
-        try await tearDown()
-    }
-
     @Test(arguments: [Scope.output, Scope.input])
     func volumeDidChangeNotification(scopeToTest: Scope) async throws {
         let nullDevice = try #require(nullDevice)
 
-        let task = Task<(channel: UInt32, scope: Scope), Error> {
+        let task = Task<(objectID: AudioObjectID, channel: UInt32, scope: Scope), Error> {
             try await waitForDeviceOption(named: .deviceVolumeDidChange)
         }
 
@@ -53,7 +21,8 @@ final class AudioDeviceNotificationTests: NullDeviceTestCase {
         let result = await task.result
 
         switch result {
-        case let .success((channel: channel, scope: scope)):
+        case let .success((objectID: objectID, channel: channel, scope: scope)):
+            #expect(objectID == nullDevice.objectID)
             #expect(channel == 0)
             #expect(scope == scopeToTest)
 
@@ -68,7 +37,7 @@ final class AudioDeviceNotificationTests: NullDeviceTestCase {
     func muteDidChangeNotification(scopeToTest: Scope) async throws {
         let nullDevice = try #require(nullDevice)
 
-        let task = Task<(channel: UInt32, scope: Scope), Error> {
+        let task = Task<(objectID: AudioObjectID, channel: UInt32, scope: Scope), Error> {
             try await waitForDeviceOption(named: .deviceMuteDidChange)
         }
 
@@ -77,7 +46,8 @@ final class AudioDeviceNotificationTests: NullDeviceTestCase {
         let result = await task.result
 
         switch result {
-        case let .success((channel: channel, scope: scope)):
+        case let .success((objectID: objectID, channel: channel, scope: scope)):
+            #expect(objectID == nullDevice.objectID)
             #expect(channel == 0)
             #expect(scope == scopeToTest)
 
@@ -92,19 +62,19 @@ final class AudioDeviceNotificationTests: NullDeviceTestCase {
 }
 
 extension AudioDeviceNotificationTests {
-    func waitForDeviceOption(named notificationName: Notification.Name) async throws -> (channel: UInt32, scope: Scope) {
-        let notification: Notification = try await NotificationCenter.wait(for: notificationName)
+    func waitForDeviceOption(named notificationName: Notification.Name) async throws -> (objectID: AudioObjectID, channel: UInt32, scope: Scope) {
+        let notification: Notification = try await NotificationCenter.wait(for: notificationName, timeout: 3)
 
-        guard let deviceNotification = notification.userInfo?[notificationName] as? AudioDeviceNotification else {
+        guard let deviceNotification = notification.object as? AudioDeviceNotification else {
             throw NSError(description: "Failed to get properties for \(notificationName)")
         }
 
         switch deviceNotification {
-        case let .deviceVolumeDidChange(channel: channel, scope: scope):
-            return (channel: channel, scope: scope)
+        case let .deviceVolumeDidChange(objectID: objectID, channel: channel, scope: scope):
+            return (objectID: objectID, channel: channel, scope: scope)
 
-        case let .deviceMuteDidChange(channel: channel, scope: scope):
-            return (channel: channel, scope: scope)
+        case let .deviceMuteDidChange(objectID: objectID, channel: channel, scope: scope):
+            return (objectID: objectID, channel: channel, scope: scope)
 
         default:
             throw NSError(description: "failed to get correct event")

@@ -8,33 +8,53 @@ import Testing
 
 @Suite(.serialized)
 class AudioHardwareManagerTests: NullDeviceTestCase {
-    @Test func testMultipleInstances() async throws {
+//    @Test func lifecycle() async throws {
+//        Log.debug(await hardwareManager.allDevices)
+//
+//        try await wait(sec: 2)
+//
+//        await hardwareManager.dispose()
+//        Log.debug(await hardwareManager.allDevices)
+//
+//        try await wait(sec: 5)
+//    }
+
+    @Test func multipleInstances() async throws {
         var hm1: AudioHardwareManager? = await AudioHardwareManager()
-        Log.debug(hm1)
+        Log.debug(hm1, await hm1?.allDevices.count, "devices")
 
         var hm2: AudioHardwareManager? = await AudioHardwareManager()
-        Log.debug(hm2)
+        Log.debug(hm2, await hm1?.allDevices.count, "devices")
 
         var hm3: AudioHardwareManager? = await AudioHardwareManager()
-        Log.debug(hm3)
+        Log.debug(hm3, await hm1?.allDevices.count, "devices")
 
+        await hm1?.dispose()
         hm1 = nil
+
+        await hm2?.dispose()
         hm2 = nil
+
+        await hm3?.dispose()
         hm3 = nil
+
+        try await wait(sec: 2)
+
+        try await tearDown()
     }
 
-    @Test func testDeviceEnumeration() async throws {
+    @Test func deviceEnumeration() async throws {
         let nullDevice = try #require(nullDevice)
 
         let aggregateDevice = try await createAggregateDevice(in: 0.3)
 
-        let allDevices = await hardware.allDevices
-        let allDeviceIDs = await hardware.allDeviceIDs
-        let allInputDevices = await hardware.allInputDevices
-        let allOutputDevices = await hardware.allOutputDevices
-        let allIODevices = await hardware.allIODevices
-        let allNonAggregateDevices = await hardware.allNonAggregateDevices
-        let allAggregateDevices = await hardware.allAggregateDevices
+        let allDevices = await hardwareManager.allDevices
+        let allDeviceIDs = await hardwareManager.allDeviceIDs
+        let allInputDevices = await hardwareManager.allInputDevices
+        let allOutputDevices = await hardwareManager.allOutputDevices
+        let allIODevices = await hardwareManager.allIODevices
+        let allNonAggregateDevices = await hardwareManager.allNonAggregateDevices
+        let allAggregateDevices = await hardwareManager.allAggregateDevices
 
         Log.debug("allDevices", allDevices)
         Log.debug("allInputDevices", allInputDevices)
@@ -54,7 +74,9 @@ class AudioHardwareManagerTests: NullDeviceTestCase {
         if let aggregateDevice {
             #expect(allAggregateDevices.contains(aggregateDevice))
 
-            #expect(noErr == hardware.removeAggregateDevice(id: aggregateDevice.id))
+            #expect(noErr == hardwareManager.removeAggregateDevice(id: aggregateDevice.id))
         }
+
+        try await tearDown()
     }
 }

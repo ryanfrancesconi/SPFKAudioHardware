@@ -25,7 +25,6 @@ class NullDeviceTestCase: SCATestCase {
         try await resetNullDeviceState()
 
         try await super.tearDown()
-        // try await wait(sec: 0.5)
         Log.debug("tearDown complete")
     }
 
@@ -59,12 +58,12 @@ extension NullDeviceTestCase {
     func createAggregateDevice(in delay: TimeInterval = 0) async throws -> AudioDevice? {
         let nullDevice = try #require(nullDevice)
 
-        if let existing = await hardware.allDevices.first(where: {
+        if let existing = await hardwareManager.allDevices.first(where: {
             $0.uid == Self.aggregateDeviceUID
         }) {
             Log.error("Device exists attempting to remove it...")
 
-            #expect(noErr == hardware.removeAggregateDevice(id: existing.id))
+            #expect(noErr == hardwareManager.removeAggregateDevice(id: existing.id))
         }
 
         // make sure this happens after the notification handlers are in place
@@ -72,7 +71,7 @@ extension NullDeviceTestCase {
             try await Task.sleep(for: .seconds(delay))
         }
 
-        return try await hardware.createAggregateDevice(
+        return try await hardwareManager.createAggregateDevice(
             mainDevice: nullDevice,
             secondDevice: nil,
             named: Self.aggregateDeviceName,
@@ -101,7 +100,7 @@ extension NullDeviceTestCase {
 
             // timeout check
             taskGroup.addTask {
-                try await Task.sleep(for: .seconds(5))
+                try await Task.sleep(seconds: 5)
                 print("* Test timed out")
                 return false
             }

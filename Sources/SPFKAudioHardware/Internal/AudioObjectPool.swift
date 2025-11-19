@@ -35,12 +35,22 @@ actor AudioObjectPool {
     }
 
     func removeAll() throws {
-        pool.removeAll()
-
         stopListening()
+
+        guard pool.isNotEmpty else {
+            Log.debug("No objects in pool")
+            return
+        }
+
+        pool.removeAll()
     }
 
     func startListening() async {
+        guard pool.isNotEmpty else {
+            Log.error("No objects in pool")
+            return
+        }
+
         for item in pool {
             let id = item.key
 
@@ -56,15 +66,6 @@ actor AudioObjectPool {
                 objectID: id,
                 eventHandler: { [weak self] notification in
                     guard let self else { return }
-
-//                    NotificationCenter.default.post(
-//                        name: notification.name,
-//                        object: self, // This device
-//                        userInfo: [
-//                            notification.name: notification,
-//                            "id": id,
-//                        ]
-//                    )
 
                     Task { @MainActor in
                         await self.received(id: id, notification: notification)
@@ -103,11 +104,7 @@ extension AudioObjectPool {
 
         NotificationCenter.default.post(
             name: notification.name,
-            object: self, // This device
-            userInfo: [
-                notification.name: notification,
-                "id": id,
-            ]
+            object: notification
         )
     }
 }

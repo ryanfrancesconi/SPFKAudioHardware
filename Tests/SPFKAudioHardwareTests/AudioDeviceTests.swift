@@ -256,7 +256,7 @@ final class AudioDeviceTests: NullDeviceTestCase {
 
     @Test(arguments: [Scope.output, Scope.input])
     func virtualMainVolumeOutput(scope: Scope) async throws {
-        let devices = await hardware.allDevices.filter {
+        let devices = await hardwareManager.allDevices.filter {
             $0.canSetVirtualMainVolume(scope: scope)
         }
 

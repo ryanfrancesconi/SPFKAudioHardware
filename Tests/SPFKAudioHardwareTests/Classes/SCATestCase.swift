@@ -7,20 +7,20 @@ import SPFKBase
 import Testing
 
 class SCATestCase {
-    var hardware: AudioHardwareManager
+    var hardwareManager: AudioHardwareManager
 
     private var defaultInputDevice: AudioDevice?
     private var defaultOutputDevice: AudioDevice?
     private var defaultSystemOutputDevice: AudioDevice?
 
     public init() async throws {
-        hardware = await AudioHardwareManager()
+        hardwareManager = await AudioHardwareManager()
         await saveDefaultDevices()
     }
 
     public func tearDown() async throws {
         try restoreDefaultDevices()
-        await hardware.dispose()
+        await hardwareManager.dispose()
     }
 
     deinit {
@@ -32,9 +32,9 @@ class SCATestCase {
 
 private extension SCATestCase {
     func saveDefaultDevices() async {
-        defaultInputDevice = await hardware.defaultInputDevice
-        defaultOutputDevice = await hardware.defaultOutputDevice
-        defaultSystemOutputDevice = await hardware.defaultSystemOutputDevice
+        defaultInputDevice = await hardwareManager.defaultInputDevice
+        defaultOutputDevice = await hardwareManager.defaultOutputDevice
+        defaultSystemOutputDevice = await hardwareManager.defaultSystemOutputDevice
     }
 
     func restoreDefaultDevices() throws {

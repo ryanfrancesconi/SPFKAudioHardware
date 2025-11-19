@@ -19,9 +19,15 @@ extension AudioDevice {
 
             Log.debug(notification)
 
-            guard let id: AudioObjectID = notification.userInfo?["id"] as? AudioObjectID,
-                  id == objectID,
-                  let device: AudioDevice = await AudioDevice.lookup(by: id) else {
+            guard let deviceNotification = notification.object as? AudioDeviceNotification else {
+                return nil
+            }
+
+            guard case let .deviceNominalSampleRateDidChange(objectID) = deviceNotification else {
+                return nil
+            }
+
+            guard let device = await AudioDevice.lookup(by: objectID) else {
                 return nil
             }
 
