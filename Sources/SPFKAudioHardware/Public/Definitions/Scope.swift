@@ -11,7 +11,7 @@ import Foundation
 /// scopes. A subclass inherits its superclass's set of scopes.
 ///
 /// - Please note that `AudioStream` only supports `input` and `output` scopes,
-/// whether as `AudioDevice` may, additionally, support `global` and `playthrough`.
+/// though an `AudioDevice` may, additionally, support `global` and `playthrough`.
 public enum Scope: Sendable {
     /// The AudioObjectPropertyScope for properties that apply to the object as a
     /// whole. All objects have a global scope and for most it is their only scope.
@@ -39,58 +39,44 @@ public enum Scope: Sendable {
 
 // MARK: - Internal Functions
 
+// swiftformat:disable consecutiveSpaces
 extension Scope {
-    var propertyScope: AudioObjectPropertyScope {
-        switch self {
-        case .global:
-            kAudioObjectPropertyScopeGlobal
-        case .input:
-            kAudioObjectPropertyScopeInput
-        case .output:
-            kAudioObjectPropertyScopeOutput
-        case .playthrough:
-            kAudioObjectPropertyScopePlayThrough
-        case .main:
-            kAudioObjectPropertyElementMain
-        case .wildcard:
-            kAudioObjectPropertyScopeWildcard
+    public init(propertyScope: AudioObjectPropertyScope) {
+        switch propertyScope {
+        case kAudioObjectPropertyScopeGlobal:       self = .global
+        case kAudioObjectPropertyScopeInput:        self = .input
+        case kAudioObjectPropertyScopeOutput:       self = .output
+        case kAudioObjectPropertyScopePlayThrough:  self = .playthrough
+        case kAudioObjectPropertyElementMain:       self = .main
+        case kAudioObjectPropertyScopeWildcard:     self = .wildcard
+
+        default:
+            // Note, the default is only here to satisfy the switch to be exhaustive
+            self = .wildcard
         }
     }
 
-    public init(propertyScope: AudioObjectPropertyScope) {
-        switch propertyScope {
-        case kAudioObjectPropertyScopeGlobal:
-            self = .global
-        case kAudioObjectPropertyScopeInput:
-            self = .input
-        case kAudioObjectPropertyScopeOutput:
-            self = .output
-        case kAudioObjectPropertyScopePlayThrough:
-            self = .playthrough
-        case kAudioObjectPropertyElementMain:
-            self = .main
-        case kAudioObjectPropertyScopeWildcard:
-            self = .wildcard
-        default:
-            // Note, the default is only here to satisfy the switch to be exhaustive.
-            self = .wildcard
+    var propertyScope: AudioObjectPropertyScope {
+        switch self {
+        case .global:       kAudioObjectPropertyScopeGlobal
+        case .input:        kAudioObjectPropertyScopeInput
+        case .output:       kAudioObjectPropertyScopeOutput
+        case .playthrough:  kAudioObjectPropertyScopePlayThrough
+        case .main:         kAudioObjectPropertyElementMain
+        case .wildcard:     kAudioObjectPropertyScopeWildcard
         }
     }
 
     public var title: String {
         switch self {
-        case .input:
-            return "Input"
-        case .output:
-            return "Output"
-        case .global:
-            return "Global"
-        case .playthrough:
-            return "Playthrough"
-        case .main:
-            return "Main"
-        case .wildcard:
-            return "Wildcard"
+        case .input:        "Input"
+        case .output:       "Output"
+        case .global:       "Global"
+        case .playthrough:  "Playthrough"
+        case .main:         "Main"
+        case .wildcard:     "Wildcard"
         }
     }
 }
+
+// swiftformat:enable consecutiveSpaces

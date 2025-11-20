@@ -70,6 +70,29 @@ final class AudioDeviceTests: NullDeviceTestCase {
         try await tearDown()
     }
 
+    @Test(arguments: [Scope.output, Scope.input])
+    func nominalSampleRates(scope: Scope) async throws {
+        let nullDevice = try #require(nullDevice)
+
+        let rates = try #require(nullDevice.getNominalSampleRates(scope: scope))
+
+        #expect(rates == [44100, 48000])
+    }
+
+    /// Bluetooth headsets commonly have different sample rate arrays for input vs output
+    @Test(arguments: [Scope.output, Scope.input])
+    func nominalSampleRatesForBluetoothDevice(scope: Scope) async throws {
+        let devices = await hardwareManager.bluetoothDevices.isOnly(scope: scope)
+
+        guard devices.isNotEmpty else { return }
+
+        for device in devices {
+            let rates = try #require(device.getNominalSampleRates(scope: scope))
+
+            Log.debug(device.name, scope, rates)
+        }
+    }
+
     @Test func lowFrequencyEffects() async throws {
         let nullDevice = try #require(nullDevice)
 
@@ -147,62 +170,62 @@ final class AudioDeviceTests: NullDeviceTestCase {
     }
 
     @Test(arguments: [Scope.output, Scope.input])
-    func volume(scopeToTest: Scope) async throws {
+    func volume(scope: Scope) async throws {
         let nullDevice = try #require(nullDevice)
 
-        #expect(kAudioHardwareNoError == nullDevice.setVolume(0, channel: 0, scope: scopeToTest))
-        #expect(nullDevice.volume(channel: 0, scope: scopeToTest) == 0)
+        #expect(kAudioHardwareNoError == nullDevice.setVolume(0, channel: 0, scope: scope))
+        #expect(nullDevice.volume(channel: 0, scope: scope) == 0)
 
-        #expect(kAudioHardwareNoError == nullDevice.setVolume(0.5, channel: 0, scope: scopeToTest))
-        #expect(nullDevice.volume(channel: 0, scope: scopeToTest) == 0.5)
+        #expect(kAudioHardwareNoError == nullDevice.setVolume(0.5, channel: 0, scope: scope))
+        #expect(nullDevice.volume(channel: 0, scope: scope) == 0.5)
 
-        #expect(kAudioHardwareNoError != nullDevice.setVolume(0.5, channel: 1, scope: scopeToTest))
-        #expect(nullDevice.volume(channel: 1, scope: scopeToTest) == nil)
+        #expect(kAudioHardwareNoError != nullDevice.setVolume(0.5, channel: 1, scope: scope))
+        #expect(nullDevice.volume(channel: 1, scope: scope) == nil)
 
         #expect(kAudioHardwareNoError != nullDevice.setVolume(0.5, channel: 2, scope: .output))
-        #expect(nullDevice.volume(channel: 2, scope: scopeToTest) == nil)
+        #expect(nullDevice.volume(channel: 2, scope: scope) == nil)
 
         try await tearDown()
     }
 
     @Test(arguments: [Scope.output, Scope.input])
-    func volumeInDecibels(scopeToTest: Scope) async throws {
+    func volumeInDecibels(scope: Scope) async throws {
         let nullDevice = try #require(nullDevice)
 
-        #expect(nullDevice.canSetVolume(channel: 0, scope: scopeToTest))
-        #expect(kAudioHardwareNoError == nullDevice.setVolume(0, channel: 0, scope: scopeToTest))
-        #expect(nullDevice.volumeInDecibels(channel: 0, scope: scopeToTest) == -96)
-        #expect(kAudioHardwareNoError == nullDevice.setVolume(0.5, channel: 0, scope: scopeToTest))
-        #expect(nullDevice.volumeInDecibels(channel: 0, scope: scopeToTest) == -70.5)
+        #expect(nullDevice.canSetVolume(channel: 0, scope: scope))
+        #expect(kAudioHardwareNoError == nullDevice.setVolume(0, channel: 0, scope: scope))
+        #expect(nullDevice.volumeInDecibels(channel: 0, scope: scope) == -96)
+        #expect(kAudioHardwareNoError == nullDevice.setVolume(0.5, channel: 0, scope: scope))
+        #expect(nullDevice.volumeInDecibels(channel: 0, scope: scope) == -70.5)
 
-        #expect(!nullDevice.canSetVolume(channel: 1, scope: scopeToTest))
-        #expect(kAudioHardwareNoError != nullDevice.setVolume(0.5, channel: 1, scope: scopeToTest))
-        #expect(nullDevice.volumeInDecibels(channel: 1, scope: scopeToTest) == nil)
+        #expect(!nullDevice.canSetVolume(channel: 1, scope: scope))
+        #expect(kAudioHardwareNoError != nullDevice.setVolume(0.5, channel: 1, scope: scope))
+        #expect(nullDevice.volumeInDecibels(channel: 1, scope: scope) == nil)
 
-        #expect(!nullDevice.canSetVolume(channel: 2, scope: scopeToTest))
-        #expect(kAudioHardwareNoError != nullDevice.setVolume(0.5, channel: 2, scope: scopeToTest))
-        #expect(nullDevice.volumeInDecibels(channel: 2, scope: scopeToTest) == nil)
+        #expect(!nullDevice.canSetVolume(channel: 2, scope: scope))
+        #expect(kAudioHardwareNoError != nullDevice.setVolume(0.5, channel: 2, scope: scope))
+        #expect(nullDevice.volumeInDecibels(channel: 2, scope: scope) == nil)
 
         try await tearDown()
     }
 
     @Test(arguments: [Scope.output, Scope.input])
-    func mute(scopeToTest: Scope) async throws {
+    func mute(scope: Scope) async throws {
         let nullDevice = try #require(nullDevice)
 
-        #expect(nullDevice.canMute(channel: 0, scope: scopeToTest))
-        #expect(kAudioHardwareNoError == nullDevice.setMute(true, channel: 0, scope: scopeToTest))
-        #expect(nullDevice.isMuted(channel: 0, scope: scopeToTest) == true)
-        #expect(kAudioHardwareNoError == nullDevice.setMute(false, channel: 0, scope: scopeToTest))
-        #expect(nullDevice.isMuted(channel: 0, scope: scopeToTest) == false)
+        #expect(nullDevice.canMute(channel: 0, scope: scope))
+        #expect(kAudioHardwareNoError == nullDevice.setMute(true, channel: 0, scope: scope))
+        #expect(nullDevice.isMuted(channel: 0, scope: scope) == true)
+        #expect(kAudioHardwareNoError == nullDevice.setMute(false, channel: 0, scope: scope))
+        #expect(nullDevice.isMuted(channel: 0, scope: scope) == false)
 
-        #expect(!nullDevice.canMute(channel: 1, scope: scopeToTest))
-        #expect(kAudioHardwareNoError != nullDevice.setMute(true, channel: 1, scope: scopeToTest))
-        #expect(nullDevice.isMuted(channel: 1, scope: scopeToTest) == nil)
+        #expect(!nullDevice.canMute(channel: 1, scope: scope))
+        #expect(kAudioHardwareNoError != nullDevice.setMute(true, channel: 1, scope: scope))
+        #expect(nullDevice.isMuted(channel: 1, scope: scope) == nil)
 
-        #expect(!nullDevice.canMute(channel: 2, scope: scopeToTest))
-        #expect(kAudioHardwareNoError != nullDevice.setMute(true, channel: 2, scope: scopeToTest))
-        #expect(nullDevice.isMuted(channel: 2, scope: scopeToTest) == nil)
+        #expect(!nullDevice.canMute(channel: 2, scope: scope))
+        #expect(kAudioHardwareNoError != nullDevice.setMute(true, channel: 2, scope: scope))
+        #expect(nullDevice.isMuted(channel: 2, scope: scope) == nil)
 
         try await tearDown()
     }

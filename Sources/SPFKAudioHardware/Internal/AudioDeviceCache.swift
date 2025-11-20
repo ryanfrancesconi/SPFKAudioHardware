@@ -141,6 +141,12 @@ extension AudioDeviceCache {
             await allDevices.async.filter { await $0.isAggregateDevice }.toArray()
         }
     }
+
+    public var bluetoothDevices: [AudioDevice] {
+        get async {
+            await allDevices.filter { $0.transportType == .bluetooth }
+        }
+    }
 }
 
 extension AudioDeviceCache {

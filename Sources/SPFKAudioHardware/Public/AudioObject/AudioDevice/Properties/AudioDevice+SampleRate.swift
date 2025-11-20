@@ -28,8 +28,14 @@ public extension AudioDevice {
     ///
     /// - Returns: *(optional)* A `Float64` array containing the nominal sample rates.
     var nominalSampleRates: [Float64]? {
-        guard let address = validAddress(selector: kAudioDevicePropertyAvailableNominalSampleRates,
-                                         scope: kAudioObjectPropertyScopeWildcard) else { return nil }
+        getNominalSampleRates(scope: .wildcard)
+    }
+
+    func getNominalSampleRates(scope: Scope) -> [Float64]? {
+        guard let address = validAddress(
+            selector: kAudioDevicePropertyAvailableNominalSampleRates,
+            scope: scope.propertyScope
+        ) else { return nil }
 
         var sampleRates = [Float64]()
         var valueRanges = [AudioValueRange]()

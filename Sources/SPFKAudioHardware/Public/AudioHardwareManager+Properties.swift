@@ -65,6 +65,13 @@ extension AudioHardwareManager {
     public var allAggregateDevices: [AudioDevice] {
         get async { await observer.cache.allAggregateDevices }
     }
+
+    /// All the devices that are bluetooth devices.
+    ///
+    /// - Returns: An array of `AudioDevice` objects.
+    public var bluetoothDevices: [AudioDevice] {
+        get async { await observer.cache.bluetoothDevices }
+    }
 }
 
 extension AudioHardwareManager {

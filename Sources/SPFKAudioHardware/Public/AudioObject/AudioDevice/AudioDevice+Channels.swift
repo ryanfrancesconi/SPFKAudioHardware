@@ -31,6 +31,17 @@ public extension AudioDevice {
         }
     }
 
+    func isOnly(scope: Scope) async -> Bool {
+        switch scope {
+        case .input:
+            await isInputOnlyDevice
+        case .output:
+            await isOutputOnlyDevice
+
+        default: false
+        }
+    }
+
     /// The number of layout channels for a given scope.
     ///
     /// - Parameter scope: A scope.
@@ -106,5 +117,11 @@ public extension AudioDevice {
         }
 
         return out
+    }
+}
+
+extension Array where Element == AudioDevice {
+    public func isOnly(scope: Scope) async -> [AudioDevice] {
+        return await self.async.filter { await $0.isOnly(scope: scope) }.toArray()
     }
 }

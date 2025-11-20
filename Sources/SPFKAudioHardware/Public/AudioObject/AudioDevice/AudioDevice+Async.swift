@@ -49,11 +49,11 @@ extension AudioDevice {
             }
 
         case let .failure(error):
-            throw error
+            throw NSError(description: error.localizedDescription + " (\(sampleRate) Hz)")
         }
 
         // OK
     }
-    
+
     // TODO: more setters
 }
