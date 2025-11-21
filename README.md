@@ -1,15 +1,19 @@
 ## SPFKAudioHardware
 
 [![Platform](https://img.shields.io/badge/Platforms-macOS%2012+-brightgreen.svg?style=flat)](https://github.com/ryanfrancesconi/SPFKAudioHardware)
-[![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange.svg?style=flat)](https://developer.apple.com/swift) 
+[![Swift 6](https://img.shields.io/badge/Swift-6-orange.svg?style=flat)](https://developer.apple.com/swift) 
 [![Swift Package Manager compatible](https://img.shields.io/badge/SPM-compatible-brightgreen.svg?style=flat&colorA=28a745&&colorB=4E4E4E)](https://github.com/apple/swift-package-manager)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ryanfrancesconi/SPFKAudioHardware/LICENSE.md)
 
-`SPFKAudioHardware` is a modern 2025 rewrite of SimplyCoreAudio. In progress...
+`SPFKAudioHardware` is a Swift abstraction on top of the Hardware Abstraction Layer of Core Audio - HAL.
 
+It is intended to be used in a concurrency based Swift macOS application.
+In progress...
+
+---
+
+### History
 
 [SimplyCoreAudio](https://github.com/rnine/SimplyCoreAudio) is a Swift framework that aims to make [Core Audio](https://developer.apple.com/documentation/coreaudio) use less tedious in macOS.
 
-### License
-
-`SimplyCoreAudio` was written by Ruben Nine ([@rnine](https://github.com/rnine)) in 2013-2014 (open-sourced in March 2014) and is licensed under the [MIT](https://opensource.org/licenses/MIT) license. See [LICENSE.md](LICENSE.md).
+`SimplyCoreAudio` was written by Ruben Nine ([@rnine](https://github.com/rnine)) in 2013-2014 (open-sourced in March 2014 and archived in March 2025) and is licensed under the [MIT](https://opensource.org/licenses/MIT) license. See [LICENSE.md](LICENSE.md).
