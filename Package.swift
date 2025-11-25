@@ -1,8 +1,8 @@
 // swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-import PackageDescription
 import Foundation
+import PackageDescription
 
 private let name: String = "SPFKAudioHardware" // Swift target
 private let dependencyNames: [String] = ["SPFKBase"]
@@ -13,7 +13,7 @@ private let platforms: [PackageDescription.SupportedPlatform]? = [
     .macOS(.v12)
 ]
 
-// MARK: - Reusable Code for a Swift + C package
+// MARK: - Reusable Code for a dual Swift + C package
 
 private let nameC: String = "\(name)C" // C/C++ target
 private let nameTests: String = "\(name)Tests" // Test target
@@ -24,67 +24,54 @@ private let products: [PackageDescription.Product] = [
 ]
 
 private var packageDependencies: [PackageDescription.Package.Dependency] {
-     let local: [PackageDescription.Package.Dependency] =
+    let local: [PackageDescription.Package.Dependency] =
         dependencyNames.map {
             .package(name: "\($0)", path: "../\($0)") // assumes the package garden is in one folder
         }
-        
-     let remote: [PackageDescription.Package.Dependency] =
+
+    let remote: [PackageDescription.Package.Dependency] =
         dependencyNames.map {
             .package(url: "\(githubBase)/\($0)", branch: dependencyBranch)
         }
-    
-    return useLocalDependencies ? local : remote
-}
 
-// is there a Sources/[NAME]/Resources folder?
-private var swiftTargetResources: [PackageDescription.Resource]? {
-    // package folder
-    let root = URL(fileURLWithPath: #file).deletingLastPathComponent()
-    
-    let dir = root.appending(component: "Sources")
-        .appending(component: name)
-        .appending(component: "Resources")
-    
-    let exists = FileManager.default.fileExists(atPath: dir.path)
-    
-    return exists ? [.process("Resources")] : nil
+    return useLocalDependencies ? local : remote
 }
 
 private var swiftTargetDependencies: [PackageDescription.Target.Dependency] {
     let names = dependencyNames.filter { $0 != "SPFKTesting" }
-    
+
     var value: [PackageDescription.Target.Dependency] = names.map {
         .byNameItem(name: "\($0)", condition: nil)
     }
-    
+
     value.append(.target(name: nameC))
-    
+
     return value
 }
 
 private let swiftTarget: PackageDescription.Target = .target(
     name: name,
     dependencies: swiftTargetDependencies,
-    resources: swiftTargetResources
+    resources: nil
 )
 
 private var testTargetDependencies: [PackageDescription.Target.Dependency] {
     var array: [PackageDescription.Target.Dependency] = [
         .byNameItem(name: name, condition: nil),
-        .byNameItem(name: nameC, condition: nil),
+        .byNameItem(name: nameC, condition: nil)
     ]
 
     if dependencyNames.contains("SPFKTesting") {
         array.append(.byNameItem(name: "SPFKTesting", condition: nil))
     }
-    
+
     return array
 }
 
 private let testTarget: PackageDescription.Target = .testTarget(
     name: nameTests,
-    dependencies: testTargetDependencies
+    dependencies: testTargetDependencies,
+    resources: nil
 )
 
 private var cTargetDependencies: [PackageDescription.Target.Dependency] {
@@ -104,7 +91,6 @@ private let cTarget: PackageDescription.Target = .target(
         .headerSearchPath("include_private")
     ]
 )
-
 
 private let targets: [PackageDescription.Target] = [
     swiftTarget, cTarget, testTarget
