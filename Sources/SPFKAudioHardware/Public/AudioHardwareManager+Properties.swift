@@ -56,15 +56,15 @@ extension AudioHardwareManager {
     /// All the devices that are real devices — not aggregate ones.
     ///
     /// - Returns: An array of `AudioDevice` objects.
-    public var allNonAggregateDevices: [AudioDevice] {
-        get async { await cache.allNonAggregateDevices }
+    public var nonAggregateDevices: [AudioDevice] {
+        get async { await cache.nonAggregateDevices }
     }
 
     /// All the devices that are aggregate devices.
     ///
     /// - Returns: An array of `AudioDevice` objects.
-    public var allAggregateDevices: [AudioDevice] {
-        get async { await cache.allAggregateDevices }
+    public var aggregateDevices: [AudioDevice] {
+        get async { await cache.aggregateDevices }
     }
 
     /// All the devices that are bluetooth devices.
@@ -87,20 +87,26 @@ extension AudioHardwareManager {
     ///
     /// - Returns: *(optional)* An `AudioDevice`.
     public var defaultInputDevice: AudioDevice? {
-        get async { await cache.defaultInputDevice }
+        get async {
+            await AudioDevice.defaultDevice(of: .defaultInput)
+        }
     }
 
     /// The default output device.
     ///
     /// - Returns: *(optional)* An `AudioDevice`.
     public var defaultOutputDevice: AudioDevice? {
-        get async { await cache.defaultOutputDevice }
+        get async {
+            await AudioDevice.defaultDevice(of: .defaultOutput)
+        }
     }
 
     /// The default system output device.
     ///
     /// - Returns: *(optional)* An `AudioDevice`.
     public var defaultSystemOutputDevice: AudioDevice? {
-        get async { await cache.defaultSystemOutputDevice }
+        get async {
+            await AudioDevice.defaultDevice(of: .alertOutput)
+        }
     }
 }

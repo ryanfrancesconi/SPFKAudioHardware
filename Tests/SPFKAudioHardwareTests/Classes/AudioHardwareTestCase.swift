@@ -20,7 +20,7 @@ class AudioHardwareTestCase {
 
     func tearDown() async throws {
         try restoreDefaultDevices()
-        try await hardwareManager.dispose()
+        try await hardwareManager.unregister()
     }
 
     deinit {

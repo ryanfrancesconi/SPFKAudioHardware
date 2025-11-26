@@ -12,17 +12,22 @@ public actor AudioHardwareManager {
 
     let objectID: AudioObjectID = .init(kAudioObjectSystemObject)
 
-    var notificationType: any PropertyAddressNotification.Type { AudioHardwareNotification.self }
-    var isListening: Bool { listener != nil }
+    var notificationType: any PropertyAddressNotification.Type {
+        AudioHardwareNotification.self
+    }
 
     var cache = AudioDeviceCache()
+
     var listener: AudioObjectPropertyListener?
+
     var updateTask: Task<Void, Error>?
 }
 
 // MARK: - Lifecycle
 
 extension AudioHardwareManager {
+    var isListening: Bool { listener != nil }
+
     /// Start must be called to begin listening for hardware events
     public func start() async throws {
         guard !isListening else {
@@ -60,7 +65,7 @@ extension AudioHardwareManager {
         listener = nil
     }
 
-    public func dispose() async throws {
+    public func unregister() async throws {
         try await stop()
         try await cache.unregister()
         Log.debug("⛔️ (shared) - { \(self) }")
@@ -71,7 +76,10 @@ extension AudioHardwareManager {
 
 extension AudioHardwareManager {
     func callback(with notification: any PropertyAddressNotification) async {
-        guard let hardwareNotification = notification as? AudioHardwareNotification else {
+        guard
+            let hardwareNotification = notification
+            as? AudioHardwareNotification
+        else {
             return
         }
 
@@ -81,7 +89,8 @@ extension AudioHardwareManager {
             updateTask = Task<Void, Error> {
                 // fill in added and removed devices from the cache
                 let event = try await cache.update()
-                let notification: AudioHardwareNotification = .deviceListChanged(objectID: objectID, event: event)
+                let notification: AudioHardwareNotification =
+                    .deviceListChanged(objectID: objectID, event: event)
                 Self.post(notification: notification)
             }
         default:

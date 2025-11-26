@@ -47,8 +47,8 @@ class AudioHardwareManagerTests: NullDeviceTestCase {
         let allInputDevices = await hardwareManager.inputDevices
         let allOutputDevices = await hardwareManager.outputDevices
         let allIODevices = await hardwareManager.allIODevices
-        let allNonAggregateDevices = await hardwareManager.allNonAggregateDevices
-        let allAggregateDevices = await hardwareManager.allAggregateDevices
+        let allNonAggregateDevices = await hardwareManager.nonAggregateDevices
+        let allAggregateDevices = await hardwareManager.aggregateDevices
 
         Log.debug("allDevices", allDevices)
         Log.debug("allInputDevices", allInputDevices)

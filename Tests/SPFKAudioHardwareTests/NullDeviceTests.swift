@@ -25,8 +25,8 @@ final class NullDeviceTests: NullDeviceTestCase {
 
         print(deviceType)
 
-        let err = try nullDevice.promote(to: deviceType)
-        #expect(noErr == err)
+        let status = try nullDevice.promote(to: deviceType)
+        #expect(noErr == status)
 
         let isDefaultDevice = await nullDevice.isDefaultDevice(for: deviceType)
         #expect(isDefaultDevice)

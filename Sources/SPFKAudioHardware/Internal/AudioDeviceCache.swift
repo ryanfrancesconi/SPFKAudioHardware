@@ -44,6 +44,18 @@ actor AudioDeviceCache {
 }
 
 extension AudioDeviceCache {
+    func start() async throws {
+        try await updateKnownDevices(
+            DeviceStatusEvent(addedDevices: allDevices)
+        )
+    }
+
+    func stop() async throws {
+        try await updateKnownDevices(
+            DeviceStatusEvent(removedDevices: cachedDevices)
+        )
+    }
+
     func unregister() async throws {
         Log.debug("unregister", cachedDevices.count, "devices")
 
@@ -64,7 +76,10 @@ extension AudioDeviceCache {
         addedDevices = latestDeviceList.filter { !cachedDevices.contains($0) }
         removedDevices = cachedDevices.filter { !latestDeviceList.contains($0) }
 
-        let status = DeviceStatusEvent(addedDevices: addedDevices, removedDevices: removedDevices)
+        let status = DeviceStatusEvent(
+            addedDevices: addedDevices,
+            removedDevices: removedDevices
+        )
 
         try Task.checkCancellation()
 
@@ -89,14 +104,6 @@ extension AudioDeviceCache {
             await AudioObjectPool.shared.startListening()
         }
     }
-
-    func start() async throws {
-        try await updateKnownDevices(DeviceStatusEvent(addedDevices: allDevices))
-    }
-
-    func stop() async throws {
-        try await updateKnownDevices(DeviceStatusEvent(removedDevices: cachedDevices))
-    }
 }
 
 extension AudioDeviceCache {
@@ -110,7 +117,9 @@ extension AudioDeviceCache {
 
     var outputDevices: [AudioDevice] {
         get async {
-            await allDevices.async.filter { await $0.channels(scope: .output) > 0 }.toArray()
+            await allDevices.async.filter {
+                await $0.channels(scope: .output) > 0
+            }.toArray()
         }
     }
 
@@ -125,21 +134,23 @@ extension AudioDeviceCache {
         }
     }
 
-    var allNonAggregateDevices: [AudioDevice] {
+    var nonAggregateDevices: [AudioDevice] {
         get async {
             await allDevices.async.filter {
                 guard let classID = $0.classID else { return false }
                 let isNotAggregate = await !$0.isAggregateDevice
 
-                return AudioDevice.isSupported(classID: classID) && isNotAggregate
+                return AudioDevice.isSupported(classID: classID)
+                    && isNotAggregate
 
             }.toArray()
         }
     }
 
-    var allAggregateDevices: [AudioDevice] {
+    var aggregateDevices: [AudioDevice] {
         get async {
-            await allDevices.async.filter { await $0.isAggregateDevice }.toArray()
+            await allDevices.async.filter { await $0.isAggregateDevice }
+                .toArray()
         }
     }
 
@@ -158,39 +169,29 @@ extension AudioDeviceCache {
 
             let allDevices = await allDevices
 
-            let modelUIDs = allDevices.compactMap { $0.modelUID }.removingDuplicates()
+            let modelUIDs = allDevices.compactMap { $0.modelUID }
+                .removingDuplicates()
 
             for modelUIDs in modelUIDs {
                 let matches = allDevices.filter { $0.modelUID == modelUIDs }
 
-                let input = await matches.async.first { await $0.isInputOnlyDevice }
-                let output = await matches.async.first { await $0.isOutputOnlyDevice }
+                let input = await matches.async.first {
+                    await $0.isInputOnlyDevice
+                }
+                let output = await matches.async.first {
+                    await $0.isOutputOnlyDevice
+                }
 
-                if let input, let output, let device = try? SplitAudioDevice(input: input, output: output) {
+                if let input, let output,
+                   let device = try? SplitAudioDevice(
+                       input: input,
+                       output: output
+                   )
+                {
                     out.append(device)
                 }
             }
             return out
-        }
-    }
-}
-
-extension AudioDeviceCache {
-    var defaultInputDevice: AudioDevice? {
-        get async {
-            await AudioDevice.defaultDevice(of: .defaultInput)
-        }
-    }
-
-    var defaultOutputDevice: AudioDevice? {
-        get async {
-            await AudioDevice.defaultDevice(of: .defaultOutput)
-        }
-    }
-
-    var defaultSystemOutputDevice: AudioDevice? {
-        get async {
-            await AudioDevice.defaultDevice(of: .alertOutput)
         }
     }
 }
