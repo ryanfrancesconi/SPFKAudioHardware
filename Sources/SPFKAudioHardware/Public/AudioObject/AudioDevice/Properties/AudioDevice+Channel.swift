@@ -215,8 +215,10 @@ extension AudioDevice {
     ///
     /// - Returns: A `StereoPair` tuple containing the channel numbers.
     public func preferredChannelsForStereo(scope: Scope) -> StereoPair? {
-        guard let address = validAddress(selector: kAudioDevicePropertyPreferredChannelsForStereo,
-                                         scope: scope.propertyScope) else { return nil }
+        guard let address = validAddress(
+            selector: kAudioDevicePropertyPreferredChannelsForStereo,
+            scope: scope.propertyScope
+        ) else { return nil }
 
         var preferredChannels = [UInt32]()
         let status = getPropertyDataArray(address, value: &preferredChannels, andDefaultValue: 0)

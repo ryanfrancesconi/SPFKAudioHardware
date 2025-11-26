@@ -420,7 +420,7 @@ extension NullDeviceTests {
     @Test(arguments: [44100, 48000])
     func setNominalSampleRate(sampleRate: Float64) async throws {
         let nullDevice = try #require(nullDevice)
-        
+
         guard nullDevice.nominalSampleRate != sampleRate else { return }
 
         #expect(nullDevice.nominalSampleRates?.contains(sampleRate) == true)
@@ -429,11 +429,11 @@ extension NullDeviceTests {
         #expect(kAudioHardwareNoError == nullDevice.setNominalSampleRate(sampleRate))
         #expect(nullDevice.nominalSampleRate != sampleRate) // expect it to not be ready yet
         #expect(nullDevice.actualSampleRate != sampleRate)
-        
+
         try await wait(sec: 0.1) //  seems to take about 0.01
         #expect(nullDevice.nominalSampleRate == sampleRate)
         #expect(nullDevice.actualSampleRate == sampleRate)
-        
+
         try await tearDown()
     }
 }

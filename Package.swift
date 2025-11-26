@@ -1,5 +1,6 @@
-// swift-tools-version: 6.2.1
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version: 6.2
+// Copyright Ryan Francesconi. All Rights Reserved. Revision History at https://github.com/ryanfrancesconi
+// Copyright Ryan Francesconi. All Rights Reserved. Revision History at https://github.com/ryanfrancesconi
 
 import PackageDescription
 
@@ -9,7 +10,7 @@ private let dependencyNamesC: [String] = []
 private let dependencyBranch: String = "main"
 private let useLocalDependencies: Bool = false
 private let platforms: [PackageDescription.SupportedPlatform]? = [
-    .macOS(.v12)
+    .macOS(.v12),
 ]
 
 // MARK: - Reusable Code for a dual Swift + C package
@@ -19,7 +20,7 @@ private let nameTests: String = "\(name)Tests" // Test target
 private let githubBase = "https://github.com/ryanfrancesconi"
 
 private let products: [PackageDescription.Product] = [
-    .library(name: name, targets: [name, nameC])
+    .library(name: name, targets: [name, nameC]),
 ]
 
 private var packageDependencies: [PackageDescription.Package.Dependency] {
@@ -57,7 +58,7 @@ private let swiftTarget: PackageDescription.Target = .target(
 private var testTargetDependencies: [PackageDescription.Target.Dependency] {
     var array: [PackageDescription.Target.Dependency] = [
         .byNameItem(name: name, condition: nil),
-        .byNameItem(name: nameC, condition: nil)
+        .byNameItem(name: nameC, condition: nil),
     ]
 
     if dependencyNames.contains("SPFKTesting") {
@@ -84,15 +85,15 @@ private let cTarget: PackageDescription.Target = .target(
     dependencies: cTargetDependencies,
     publicHeadersPath: "include",
     cSettings: [
-        .headerSearchPath("include_private")
+        .headerSearchPath("include_private"),
     ],
     cxxSettings: [
-        .headerSearchPath("include_private")
+        .headerSearchPath("include_private"),
     ]
 )
 
 private let targets: [PackageDescription.Target] = [
-    swiftTarget, cTarget, testTarget
+    swiftTarget, cTarget, testTarget,
 ]
 
 let package = Package(
