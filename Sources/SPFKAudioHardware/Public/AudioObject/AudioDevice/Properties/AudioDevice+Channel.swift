@@ -243,4 +243,23 @@ extension AudioDevice {
         var preferredChannels = [channels.left, channels.right]
         return setPropertyDataArray(address, andValue: &preferredChannels)
     }
+
+    public func preferredChannelsDescription(scope: Scope) async -> String? {
+        guard let preferredChannelsForStereo = preferredChannelsForStereo(scope: scope) else { return nil }
+
+        var namedChannels = await namedChannels(scope: scope).filter {
+            $0.channel == preferredChannelsForStereo.left ||
+                $0.channel == preferredChannelsForStereo.right
+        }
+
+        namedChannels = namedChannels.sorted(by: { lhs, rhs -> Bool in
+            lhs.channel < rhs.channel
+        })
+
+        let stringValues = namedChannels.map {
+            $0.description
+        }
+
+        return stringValues.joined(separator: " + ")
+    }
 }
