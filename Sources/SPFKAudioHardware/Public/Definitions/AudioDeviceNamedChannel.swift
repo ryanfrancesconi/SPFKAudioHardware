@@ -6,14 +6,9 @@ import Foundation
 /// Provides a single object that contains a channel name with its index and scope
 public struct AudioDeviceNamedChannel: CustomStringConvertible, Equatable, Sendable {
     public var description: String {
-        var value = "\(scope.title) \(channel)"
+        let name = name ?? "Input"
 
-        // MacBook air speakers Left channel is named "1". That's dumb.
-        if let name, name != "", name != String(channel) {
-            value = "\(channel + 1) - " + name
-        }
-
-        return value
+        return "\(channel + 1) - " + name
     }
 
     public let channel: UInt32
