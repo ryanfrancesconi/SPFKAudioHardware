@@ -57,7 +57,7 @@ extension AudioDeviceCache {
     }
 
     func unregister() async throws {
-        Log.debug("unregister", cachedDevices.count, "devices")
+        // Log.debug("unregister", cachedDevices.count, "devices")
 
         try await stop()
 
@@ -86,7 +86,7 @@ extension AudioDeviceCache {
         // Add new devices & remove old ones.
         try await updateKnownDevices(status)
 
-        Log.debug("+added \(addedDevices.count) -removed \(removedDevices.count)")
+        // Log.debug("+added \(addedDevices.count) -removed \(removedDevices.count)")
 
         return status
     }
@@ -95,7 +95,7 @@ extension AudioDeviceCache {
         cachedDevices.append(contentsOf: devices.addedDevices)
         cachedDevices.removeAll { devices.removedDevices.contains($0) }
 
-        Log.debug("Removing", devices.removedDevices.count, "devices...")
+        // Log.debug("Removing", devices.removedDevices.count, "devices...")
         for device in devices.removedDevices {
             try await AudioObjectPool.shared.remove(device.id)
         }

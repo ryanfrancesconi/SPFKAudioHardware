@@ -66,7 +66,9 @@ extension AudioDevice {
     public func channels(scope: Scope) async -> UInt32 {
         guard let streams = await streams(scope: scope) else { return 0 }
 
-        return streams.map { $0.physicalFormat?.mChannelsPerFrame ?? 0 }.reduce(0, +)
+        return streams.compactMap {
+            $0.physicalFormat?.mChannelsPerFrame
+        }.reduce(0, +)
     }
 
     /// A human readable name for the channel number and scope specified.
@@ -76,9 +78,11 @@ extension AudioDevice {
     ///
     /// - Returns: *(optional)* A `String` with the name of the channel.
     public func name(channel: UInt32, scope: Scope) -> String? {
-        guard let address = validAddress(selector: kAudioObjectPropertyElementName,
-                                         scope: scope.propertyScope,
-                                         element: channel) else { return nil }
+        guard let address = validAddress(
+            selector: kAudioObjectPropertyElementName,
+            scope: scope.propertyScope,
+            element: channel
+        ) else { return nil }
 
         guard let name: String = getProperty(address: address) else { return nil }
 

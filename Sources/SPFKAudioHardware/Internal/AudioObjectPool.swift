@@ -14,7 +14,7 @@ public actor AudioObjectPool: Sendable {
     private var pool = [AudioObjectID: any AudioPropertyListenerModel]()
     private var listeners = [AudioObjectID: AudioObjectPropertyListener]()
 
-    //public static var postNotifications: Bool = true
+    // public static var postNotifications: Bool = true
 
     private init() {}
 
@@ -38,7 +38,7 @@ public actor AudioObjectPool: Sendable {
         stopListening()
 
         guard pool.isNotEmpty else {
-            Log.debug("No objects in pool")
+            // Log.debug("No objects in pool")
             return
         }
 
@@ -53,7 +53,7 @@ extension AudioObjectPool {
             return
         }
 
-        Log.debug("adding listeners for", pool.count, "devices")
+        // Log.debug("adding listeners for", pool.count, "devices")
 
         for item in pool {
             let id = item.key
@@ -88,7 +88,7 @@ extension AudioObjectPool {
     }
 
     func stopListening() {
-        Log.debug("removing listeners for", pool.count, "devices")
+        // Log.debug("removing listeners for", pool.count, "devices")
 
         for listener in listeners {
             do {
@@ -106,9 +106,9 @@ extension AudioObjectPool {
 
 extension AudioObjectPool {
     private func received(id: AudioObjectID, notification: any PropertyAddressNotification) {
-        Log.debug("🔊 \(id)", notification)
+        // Log.debug("🔊 \(id)", notification)
 
-        //guard Self.postNotifications else { return }
+        // guard Self.postNotifications else { return }
 
         NotificationCenter.default.post(
             name: notification.name,
