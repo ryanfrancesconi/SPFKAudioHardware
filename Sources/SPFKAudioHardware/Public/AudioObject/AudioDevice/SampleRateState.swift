@@ -9,14 +9,12 @@ public actor SampleRateState {
     var updateTask: Task<Float64?, Error>?
 
     var device: AudioDevice?
-
     public func update(device: AudioDevice) {
         self.device = device
     }
 
     var nominalSampleRate: Float64? { device?.nominalSampleRate }
     var nominalSampleRates: [Float64]? { device?.nominalSampleRates }
-
     var nameAndID: String { device?.nameAndID ?? "<unknown>" }
 
     /// Update the device sample rate and wait for the completion.
