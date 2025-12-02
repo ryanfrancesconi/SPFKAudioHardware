@@ -4,9 +4,10 @@
 import CoreAudio
 import Foundation
 import Numerics
-@testable import SPFKAudioHardware
 import SPFKBase
 import Testing
+
+@testable import SPFKAudioHardware
 
 @Suite(.serialized)
 final class AudioHardwareTests: NullDeviceTestCase {
@@ -19,7 +20,7 @@ final class AudioHardwareTests: NullDeviceTestCase {
         await #expect(device.ownedAggregateDevices?.count == 1)
 
         let status = await hardwareManager.removeAggregateDevice(id: device.id)
-        
+
         #expect(kAudioHardwareNoError == status)
 
         try await tearDown()
@@ -37,7 +38,7 @@ final class AudioHardwareTests: NullDeviceTestCase {
             guard let hardwareNotification = anyObject as? AudioHardwareNotification else { return false }
 
             switch hardwareNotification {
-            case let .deviceListChanged(objectID: _, event: event):
+            case .deviceListChanged(objectID: _, event: let event):
                 guard let firstAddedDevice = event.addedDevices.first else { return false }
                 return firstAddedDevice.uid == expectedUID && firstAddedDevice.name == expectedName
             default:
@@ -48,6 +49,7 @@ final class AudioHardwareTests: NullDeviceTestCase {
         let device = try await createAggregateDevice(in: 1)
 
         #expect(try await task.value)
+
         task.cancel()
 
         let status = await hardwareManager.removeAggregateDevice(id: device.id)

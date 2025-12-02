@@ -37,7 +37,7 @@ class NullDeviceTestCase: AudioHardwareTestCase {
         let nullDevice = try #require(nullDevice)
 
         nullDevice.unsetHogMode()
-        try await nullDevice.updateAndWait(sampleRate: 44100)
+        try await nullDevice.sampleRateUpdater.updateAndWait(sampleRate: 44100)
 
         #expect(
             kAudioHardwareNoError == nullDevice.setPreferredChannelsForStereo(channels: StereoPair(left: 1, right: 2), scope: .output)

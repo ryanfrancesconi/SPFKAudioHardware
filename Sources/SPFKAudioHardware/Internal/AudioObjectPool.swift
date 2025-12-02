@@ -71,9 +71,7 @@ extension AudioObjectPool {
                 eventHandler: { [weak self] notification in
                     guard let self else { return }
 
-                    Task { @MainActor in
-                        await self.received(id: id, notification: notification)
-                    }
+                    Task { await received(id: id, notification: notification) }
                 }
             )
 
@@ -105,15 +103,13 @@ extension AudioObjectPool {
 }
 
 extension AudioObjectPool {
-    private func received(id: AudioObjectID, notification: any PropertyAddressNotification) {
+    @MainActor private func received(id: AudioObjectID, notification: any PropertyAddressNotification) {
         // Log.debug("🔊 \(id)", notification)
 
-        Task { @MainActor in
-            NotificationCenter.default.post(
-                name: notification.name,
-                object: notification
-            )
-        }
+        NotificationCenter.default.post(
+            name: notification.name,
+            object: notification
+        )
     }
 }
 

@@ -42,7 +42,10 @@ extension AudioHardwareManager {
             objectID: objectID,
             eventHandler: { [weak self] notification in
                 guard let self else { return }
-                Task { await self.callback(with: notification) }
+
+                Task {
+                    try await callback(with: notification)
+                }
             }
         )
 
@@ -75,36 +78,40 @@ extension AudioHardwareManager {
 // MARK: - Event Handler
 
 extension AudioHardwareManager {
-    func callback(with notification: any PropertyAddressNotification) async {
-        guard
-            let hardwareNotification = notification
-            as? AudioHardwareNotification
-        else {
+    private func callback(with notification: any PropertyAddressNotification) async throws {
+        guard let hardwareNotification = notification as? AudioHardwareNotification else {
             return
         }
 
-        switch hardwareNotification {
-        case .deviceListChanged:
-            updateTask?.cancel()
-            updateTask = Task<Void, Error> {
+        Log.debug(hardwareNotification)
+
+        updateTask?.cancel()
+
+        let task = Task<Void, Error> {
+            switch hardwareNotification {
+            case .deviceListChanged:
                 // fill in added and removed devices from the cache
                 let event = try await cache.update()
                 let notification: AudioHardwareNotification =
                     .deviceListChanged(objectID: objectID, event: event)
-                Self.post(notification: notification)
+
+                await Self.post(notification: notification)
+
+            default:
+                await Self.post(notification: hardwareNotification)
             }
-        default:
-            Self.post(notification: hardwareNotification)
         }
+
+        updateTask = task
+
+        try await task.value
     }
 
-    private static func post(notification: AudioHardwareNotification) {
-        Task { @MainActor in
-            NotificationCenter.default.post(
-                name: notification.name,
-                object: notification,
-                userInfo: nil
-            )
-        }
+    @MainActor private static func post(notification: AudioHardwareNotification) {
+        NotificationCenter.default.post(
+            name: notification.name,
+            object: notification,
+            userInfo: nil
+        )
     }
 }

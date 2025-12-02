@@ -25,10 +25,12 @@ public final class AudioDevice: AudioPropertyListenerModel, Sendable {
     private nonisolated(unsafe) var _deviceName: String = ""
 
     public static func isSupported(classID: AudioClassID) -> Bool {
-        Self.supportedClassIDs.contains(classID)
+        supportedClassIDs.contains(classID)
     }
 
     // MARK: - Requirements
+
+    public let sampleRateUpdater = SampleRateState()
 
     public let objectID: AudioObjectID
 
@@ -38,6 +40,8 @@ public final class AudioDevice: AudioPropertyListenerModel, Sendable {
     public init(objectID: AudioObjectID) async throws {
         self.objectID = objectID
 
+        await sampleRateUpdater.update(device: self)
+
         guard let classID else {
             throw NSError(description: "classID is nil")
         }
@@ -46,7 +50,7 @@ public final class AudioDevice: AudioPropertyListenerModel, Sendable {
             throw NSError(description: "Unknown classID (\(classID.fourCC))")
         }
 
-        _deviceName = self.objectName ?? "<Unknown Device Name>"
+        _deviceName = objectName ?? "<Unknown Device Name>"
     }
 
     // MARK: - AudioObject Overrides
@@ -62,6 +66,6 @@ public final class AudioDevice: AudioPropertyListenerModel, Sendable {
 extension AudioDevice: CustomStringConvertible {
     /// Returns a `String` representation of self.
     public var description: String {
-        return "\(name) (\(id))"
+        "\(name) (\(id))"
     }
 }

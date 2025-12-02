@@ -2,9 +2,10 @@
 // Based on SimplyCoreAudio by Ruben Nine (c) 2014-2024. Revision History at https://github.com/rnine/SimplyCoreAudio
 
 import CoreAudio
-@testable import SPFKAudioHardware
 import SPFKBase
 import Testing
+
+@testable import SPFKAudioHardware
 
 @Suite(.serialized)
 class AudioHardwareManagerTests: NullDeviceTestCase {
@@ -27,7 +28,7 @@ class AudioHardwareManagerTests: NullDeviceTestCase {
 
             for sampleRate in sampleRates {
                 do {
-                    try await device.device(scope: scope).updateAndWait(sampleRate: sampleRate)
+                    try await device.device(scope: scope).sampleRateUpdater.updateAndWait(sampleRate: sampleRate)
                 } catch {
                     Log.error(error)
                 }

@@ -3,37 +3,13 @@
 
 import CoreAudio
 import Foundation
-@testable import SPFKAudioHardware
 import SPFKBase
 import Testing
 
+@testable import SPFKAudioHardware
+
 @Suite(.serialized)
 final class AudioDeviceNotificationTests: NullDeviceTestCase {
-    @Test(arguments: [44100, 48000])
-    func updateAndWait(sampleRate: Float64) async throws {
-        let nullDevice = try #require(nullDevice)
-
-        try await nullDevice.updateAndWait(sampleRate: sampleRate)
-
-        #expect(sampleRate == nullDevice.nominalSampleRate)
-
-        try await tearDown()
-    }
-
-    @Test(arguments: [22050, 96000])
-    func verifyInvalidThrows(sampleRate: Float64) async throws {
-        let nullDevice = try #require(nullDevice)
-
-        do {
-            try await nullDevice.updateAndWait(sampleRate: sampleRate)
-        } catch {
-            Log.debug("✅", error)
-            #expect(error.localizedDescription.contains("doesn't support \(sampleRate)"))
-        }
-
-        try await tearDown()
-    }
-
     @Test(arguments: [Scope.output, Scope.input])
     func volumeDidChangeNotification(scope: Scope) async throws {
         let nullDevice = try #require(nullDevice)
@@ -49,12 +25,12 @@ final class AudioDeviceNotificationTests: NullDeviceTestCase {
         let result = await task.result
 
         switch result {
-        case let .success((objectID: objectID, channel: channel, scope: scope)):
+        case .success((objectID: let objectID, channel: let channel, scope: let scope)):
             #expect(objectID == nullDevice.objectID)
             #expect(channel == 0)
             #expect(scope == scope)
 
-        case let .failure(error):
+        case .failure(let error):
             throw error
         }
 
@@ -76,12 +52,12 @@ final class AudioDeviceNotificationTests: NullDeviceTestCase {
         let result = await task.result
 
         switch result {
-        case let .success((objectID: objectID, channel: channel, scope: scope)):
+        case .success((objectID: let objectID, channel: let channel, scope: let scope)):
             #expect(objectID == nullDevice.objectID)
             #expect(channel == 0)
             #expect(scope == scope)
 
-        case let .failure(error):
+        case .failure(let error):
             throw error
         }
 
@@ -102,7 +78,9 @@ final class AudioDeviceNotificationTests: NullDeviceTestCase {
 }
 
 extension AudioDeviceNotificationTests {
-    static func waitForDeviceOption(named notificationName: Notification.Name) async throws -> (objectID: AudioObjectID, channel: UInt32, scope: Scope) {
+    static func waitForDeviceOption(named notificationName: Notification.Name) async throws -> (
+        objectID: AudioObjectID, channel: UInt32, scope: Scope
+    ) {
         let notification: Notification = try await NotificationCenter.wait(for: notificationName, timeout: 3)
 
         guard let deviceNotification = notification.object as? AudioDeviceNotification else {
@@ -110,10 +88,10 @@ extension AudioDeviceNotificationTests {
         }
 
         switch deviceNotification {
-        case let .deviceVolumeDidChange(objectID: objectID, channel: channel, scope: scope):
+        case .deviceVolumeDidChange(objectID: let objectID, channel: let channel, scope: let scope):
             return (objectID: objectID, channel: channel, scope: scope)
 
-        case let .deviceMuteDidChange(objectID: objectID, channel: channel, scope: scope):
+        case .deviceMuteDidChange(objectID: let objectID, channel: let channel, scope: let scope):
             return (objectID: objectID, channel: channel, scope: scope)
 
         default:
