@@ -5,32 +5,25 @@ import PackageDescription
 
 let package = Package(
     name: "spfk-audio-hardware",
-    platforms: [
-        .macOS(.v12),
-    ],
+    platforms: [.macOS(.v12),],
     products: [
         .library(
             name: "SPFKAudioHardware",
-            targets: [
-                "SPFKAudioHardware",
-                "SPFKAudioHardwareC",
-            ]
+            targets: ["SPFKAudioHardware", "SPFKAudioHardwareC",]
         ),
     ],
     dependencies: [
         .package(url: "https://github.com/ryanfrancesconi/spfk-base", branch: "development"),
         .package(url: "https://github.com/ryanfrancesconi/spfk-testing", branch: "development"),
-
     ],
     targets: [
         .target(
             name: "SPFKAudioHardware",
             dependencies: [
-                "SPFKAudioHardwareC",
+                .targetItem(name: "SPFKAudioHardwareC", condition: nil),
                 .product(name: "SPFKBase", package: "spfk-base"),
             ]
         ),
-
         .target(
             name: "SPFKAudioHardwareC",
             dependencies: [
@@ -43,12 +36,11 @@ let package = Package(
                 .headerSearchPath("include_private")
             ]
         ),
-
         .testTarget(
             name: "SPFKAudioHardwareTests",
             dependencies: [
-                "SPFKAudioHardware",
-                "SPFKAudioHardwareC",
+                .targetItem(name: "SPFKAudioHardware", condition: nil),
+                .targetItem(name: "SPFKAudioHardwareC", condition: nil),
                 .product(name: "SPFKTesting", package: "spfk-testing"),
             ]
         ),
