@@ -26,8 +26,7 @@ let package = Package(
         ),
         .target(
             name: "SPFKAudioHardwareC",
-            dependencies: [
-            ],
+            dependencies: [],
             publicHeadersPath: "include",
             cSettings: [
                 .headerSearchPath("include_private")
