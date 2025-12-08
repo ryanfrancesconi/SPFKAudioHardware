@@ -40,7 +40,7 @@ public final class AudioDevice: AudioPropertyListenerModel, Sendable {
     public init(objectID: AudioObjectID) async throws {
         self.objectID = objectID
 
-        await sampleRateUpdater.update(device: self)
+        await sampleRateUpdater.update(objectID: objectID)
 
         guard let classID else {
             throw NSError(description: "classID is nil")

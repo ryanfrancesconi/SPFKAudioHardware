@@ -183,10 +183,10 @@ extension AudioDeviceCache {
                 }
 
                 if let input, let output,
-                    let device = try? SplitAudioDevice(
-                        input: input,
-                        output: output,
-                    )
+                   let device = try? SplitAudioDevice(
+                       input: input,
+                       output: output,
+                   )
                 {
                     out.append(device)
                 }

@@ -8,14 +8,11 @@ import SPFKBase
 public actor SampleRateState {
     var updateTask: Task<Float64?, Error>?
 
-    var device: AudioDevice?
-    public func update(device: AudioDevice) {
-        self.device = device
-    }
+    public var objectID: AudioObjectID?
 
-    var nominalSampleRate: Float64? { device?.nominalSampleRate }
-    var nominalSampleRates: [Float64]? { device?.nominalSampleRates }
-    var nameAndID: String { device?.nameAndID ?? "<unknown>" }
+    public func update(objectID: AudioObjectID) {
+        self.objectID = objectID
+    }
 
     /// Update the device sample rate and wait for the completion.
     /// Errors will be thrown if the sample rate requested isn't compatible.
@@ -23,9 +20,15 @@ public actor SampleRateState {
     public func updateAndWait(sampleRate requestedRate: Double) async throws {
         updateTask?.cancel()
 
-        guard let device else {
+        guard let objectID, let device = await AudioDevice.lookup(id: objectID) else {
             throw NSError(description: "device hasn't been set")
         }
+
+        guard let nominalSampleRate = device.nominalSampleRate else {
+            throw NSError(description: "nominalSampleRate is nil")
+        }
+
+        let nameAndID = device.nameAndID
 
         guard requestedRate != nominalSampleRate else {
             Log.error("\(nameAndID) is already set to \(requestedRate). Ignoring this call.")
@@ -34,7 +37,9 @@ public actor SampleRateState {
 
         let benchmark = Benchmark(label: "\((#file as NSString).lastPathComponent):\(#function) sampleRate(\(requestedRate))"); defer { benchmark.stop() }
 
-        guard let nominalSampleRates, nominalSampleRates.contains(requestedRate) else {
+        guard let nominalSampleRates = device.nominalSampleRates,
+              nominalSampleRates.contains(requestedRate)
+        else {
             throw NSError(description: "\(nameAndID) doesn't support \(requestedRate) Hz")
         }
 
