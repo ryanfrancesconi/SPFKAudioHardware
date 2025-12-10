@@ -27,6 +27,11 @@ public actor AudioObjectPool: Sendable {
             return // already in the pool
         }
 
+//        if audioObject.objectName?.hasPrefix("CADefaultDeviceAggregate") == true {
+//            Log.error("Don't add the CADefaultDeviceAggregate")
+//            return
+//        }
+
         pool[id] = audioObject
 
         Log.debug("✅ \(audioObject)")

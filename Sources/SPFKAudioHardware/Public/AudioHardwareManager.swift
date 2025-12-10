@@ -43,7 +43,7 @@ extension AudioHardwareManager {
             eventHandler: { [weak self] notification in
                 guard let self else { return }
 
-                Task {
+                Task { @MainActor in
                     try await callback(with: notification)
                 }
             }
@@ -78,51 +78,53 @@ extension AudioHardwareManager {
 // MARK: - Event Handler
 
 extension AudioHardwareManager {
+    @MainActor
     private func callback(with notification: any PropertyAddressNotification) async throws {
         guard let hardwareNotification = notification as? AudioHardwareNotification else {
             return
         }
 
-        updateTask?.cancel()
+        // await updateTask?.cancel()
 
-        let task = Task<Void, Error> {
-            switch hardwareNotification {
-            case .deviceListChanged:
-                // fill in added and removed devices from the cache
-                let event = try await cache.update()
-                try Task.checkCancellation()
+//        let task = Task<Void, Error> {
+        switch hardwareNotification {
+        case .deviceListChanged:
+            // fill in added and removed devices from the cache
+            let event = try await cache.update()
+            try Task.checkCancellation()
 
-                guard event.removedDevices.isNotEmpty || event.addedDevices.isNotEmpty else {
-                    Log.error("No changes detected")
-                    return
-                }
-
-                let notification: AudioHardwareNotification =
-                    .deviceListChanged(objectID: objectID, event: event)
-
-                await Self.post(notification: notification)
-
-            default:
-                try Task.checkCancellation()
-
-                await Self.post(notification: hardwareNotification)
+            guard event.removedDevices.isNotEmpty || event.addedDevices.isNotEmpty else {
+                Log.error("No changes detected")
+                return
             }
+
+            let notification: AudioHardwareNotification =
+                .deviceListChanged(objectID: objectID, event: event)
+
+            post(notification: notification)
+
+        default:
+            try Task.checkCancellation()
+
+            post(notification: hardwareNotification)
         }
+        // }
 
-        updateTask = task
+        // updateTask = task
 
-        let result = await task.result
-
-        switch result {
-        case .success:
-            break
-            
-        case let .failure(error):
-            Log.error(error)
-        }
+//        let result = await task.result
+//
+//        switch result {
+//        case .success:
+//            break
+//
+//        case let .failure(error):
+//            Log.error(error)
+//        }
     }
 
-    @MainActor private static func post(notification: AudioHardwareNotification) {
+    @MainActor
+    private func post(notification: AudioHardwareNotification) {
         NotificationCenter.default.post(
             name: notification.name,
             object: notification,

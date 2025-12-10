@@ -7,7 +7,7 @@ import Foundation
 // MARK: - Aggregate Device Functions
 
 extension AudioDevice {
-    func isCADefaultDeviceAggregate() async -> Bool {
+    public func isCADefaultDeviceAggregate() async -> Bool {
         await isAggregateDevice &&
             name.hasPrefix("CADefaultDeviceAggregate")
     }

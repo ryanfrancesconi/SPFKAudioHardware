@@ -29,6 +29,11 @@ final class S_AudioObjectPropertyListener {
         self.objectID = objectID
         self.eventHandler = eventHandler
     }
+    
+    deinit {
+        try? stop()
+        Log.debug("- { \(self) (\(objectID)) }")
+    }
 
     func start() throws {
         guard !isListening else {

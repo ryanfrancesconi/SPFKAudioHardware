@@ -126,7 +126,7 @@ extension AudioDeviceNotification: PropertyAddressNotification {
             return nil
 
         default:
-            Log.error("AudioDeviceNotification: unhandled mSelector (\(propertyAddress.mSelector.fourCC))")
+            Log.error("AudioDeviceNotification: unhandled mSelector \(propertyAddress.mSelector) (\(propertyAddress.mSelector.fourCC))")
             return nil
         }
     }
@@ -173,39 +173,37 @@ extension AudioDeviceNotification {
 
 extension AudioDeviceNotification {
     public func getAudioDevice() async -> AudioDevice? {
-        var id: AudioObjectID
-
-        switch self {
+        let id: AudioObjectID = switch self {
         case let .deviceNominalSampleRateDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceAvailableNominalSampleRatesDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceClockSourceDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceNameDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceOwnedObjectsDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceVolumeDidChange(objectID: objectID, channel: _, scope: _):
-            id = objectID
+            objectID
         case let .deviceMuteDidChange(objectID: objectID, channel: _, scope: _):
-            id = objectID
+            objectID
         case let .deviceIsAliveDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceIsRunningDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceIsRunningSomewhereDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceIsJackConnectedDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .devicePreferredChannelsForStereoDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceHogModeDidChange(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceProcessorOverload(objectID: objectID):
-            id = objectID
+            objectID
         case let .deviceIOStoppedAbnormally(objectID: objectID):
-            id = objectID
+            objectID
         }
 
         return try? await AudioObjectPool.shared.lookup(id: id)

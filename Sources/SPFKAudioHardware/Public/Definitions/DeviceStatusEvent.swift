@@ -5,6 +5,10 @@ public struct DeviceStatusEvent: Hashable, Sendable {
     public private(set) var addedDevices: [AudioDevice]
     public private(set) var removedDevices: [AudioDevice]
     
+    public var allDevices: [AudioDevice] {
+        addedDevices + removedDevices
+    }
+    
     public init(addedDevices: [AudioDevice] = [], removedDevices: [AudioDevice] = []) {
         self.addedDevices = addedDevices
         self.removedDevices = removedDevices

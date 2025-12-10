@@ -91,6 +91,8 @@ extension Notification.Name {
 
     /// Called whenever the audio stream physical format changes.
     public static let streamPhysicalFormatDidChange = Self("streamPhysicalFormatDidChange")
+    
+    public static let prun = Self("prun")
 }
 
 extension Notification.Name {
