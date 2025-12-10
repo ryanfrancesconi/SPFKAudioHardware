@@ -22,7 +22,7 @@ extension AudioDevice {
     /// - Parameter uid: An audio device unique identifier.
     ///
     /// - Note: If unique identifier is not valid, `nil` will be returned.
-    public static func lookup(uid: String) async throws -> AudioDevice? {
+    public static func lookup(uid: String) async throws -> AudioDevice {
         let address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDeviceForUID,
             mScope: kAudioObjectPropertyScopeGlobal,
