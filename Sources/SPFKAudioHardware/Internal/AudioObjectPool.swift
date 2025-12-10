@@ -6,7 +6,7 @@ import Foundation
 import SPFKAudioHardwareC
 import SPFKBase
 
-typealias AudioObjectPropertyListener = C_AudioObjectPropertyListener
+typealias AudioObjectPropertyListener = S_AudioObjectPropertyListener
 
 /// Singleton AudioObjectPool which stores devices and streams. Everything is internal except
 /// for the lookup()
@@ -26,11 +26,6 @@ public actor AudioObjectPool: Sendable {
         guard pool[id]?.objectID != audioObject.objectID else {
             return // already in the pool
         }
-
-//        if audioObject.objectName?.hasPrefix("CADefaultDeviceAggregate") == true {
-//            Log.error("Don't add the CADefaultDeviceAggregate")
-//            return
-//        }
 
         pool[id] = audioObject
 

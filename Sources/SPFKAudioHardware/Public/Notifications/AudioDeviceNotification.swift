@@ -126,7 +126,7 @@ extension AudioDeviceNotification: PropertyAddressNotification {
             return nil
 
         default:
-            Log.error("AudioDeviceNotification: unhandled mSelector \(propertyAddress.mSelector) (\(propertyAddress.mSelector.fourCC))")
+            // Log.error("AudioDeviceNotification: unhandled mSelector \(propertyAddress.mSelector) (\(propertyAddress.mSelector.fourCC))")
             return nil
         }
     }

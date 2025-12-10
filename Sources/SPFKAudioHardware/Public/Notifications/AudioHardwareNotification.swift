@@ -17,8 +17,6 @@ public enum AudioHardwareNotification: Hashable, Sendable {
     /// Called whenever the list of hardware devices and device subdevices changes.
     /// (i.e., devices that are part of *Aggregate* or *Multi-Output* devices.)
     case deviceListChanged(objectID: AudioObjectID, event: DeviceStatusEvent)
-
-    case prun(objectID: AudioObjectID)
 }
 
 extension AudioHardwareNotification: PropertyAddressNotification {
@@ -36,11 +34,8 @@ extension AudioHardwareNotification: PropertyAddressNotification {
         case kAudioHardwarePropertyDefaultSystemOutputDevice:
             self = .defaultSystemOutputDeviceChanged(objectID: objectID)
 
-        case "prun".fourCC:
-            self = .prun(objectID: objectID)
-
         default:
-            Log.error("AudioHardwareNotification: unhandled mSelector \(propertyAddress.mSelector) (\(propertyAddress.mSelector.fourCC))")
+            // Log.error("AudioHardwareNotification: unhandled mSelector \(propertyAddress.mSelector) (\(propertyAddress.mSelector.fourCC))")
             return nil
         }
     }
@@ -60,9 +55,6 @@ extension AudioHardwareNotification {
 
         case .deviceListChanged:
             .deviceListChanged
-
-        case .prun:
-            .prun
         }
     }
 }
