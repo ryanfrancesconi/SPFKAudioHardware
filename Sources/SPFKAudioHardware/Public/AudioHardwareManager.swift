@@ -84,9 +84,6 @@ extension AudioHardwareManager {
             return
         }
 
-        // await updateTask?.cancel()
-
-//        let task = Task<Void, Error> {
         switch hardwareNotification {
         case .deviceListChanged:
             // fill in added and removed devices from the cache
@@ -108,19 +105,6 @@ extension AudioHardwareManager {
 
             post(notification: hardwareNotification)
         }
-        // }
-
-        // updateTask = task
-
-//        let result = await task.result
-//
-//        switch result {
-//        case .success:
-//            break
-//
-//        case let .failure(error):
-//            Log.error(error)
-//        }
     }
 
     @MainActor

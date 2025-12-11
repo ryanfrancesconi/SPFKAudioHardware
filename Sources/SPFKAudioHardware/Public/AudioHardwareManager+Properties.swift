@@ -4,7 +4,6 @@
 import CoreAudio.AudioHardware
 import Foundation
 
-@MainActor
 extension AudioHardwareManager {
     // MARK: - Device Enumeration
 
@@ -79,7 +78,6 @@ extension AudioHardwareManager {
     }
 }
 
-@MainActor
 extension AudioHardwareManager {
     // MARK: - Default Devices
 
