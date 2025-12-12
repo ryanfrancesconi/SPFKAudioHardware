@@ -32,7 +32,7 @@ final class S_AudioObjectPropertyListener {
     
     deinit {
         try? stop()
-        Log.debug("- { \(self) (\(objectID)) }")
+        // Log.debug("- { \(self) (\(objectID)) }")
     }
 
     func start() throws {

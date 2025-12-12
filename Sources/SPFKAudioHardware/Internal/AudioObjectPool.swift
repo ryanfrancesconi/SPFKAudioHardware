@@ -6,8 +6,6 @@ import Foundation
 import SPFKAudioHardwareC
 import SPFKBase
 
-
-
 /// Singleton AudioObjectPool which stores devices and streams. Everything is internal except
 /// for the lookup()
 public actor AudioObjectPool: Sendable {
@@ -42,8 +40,10 @@ public actor AudioObjectPool: Sendable {
         let removedListener = listeners.removeValue(forKey: id)
         let removedPoolItem = pool.removeValue(forKey: id)
 
-        Log.debug("⛔️ listener objectID", removedListener?.objectID, "pool item", removedPoolItem)
-        Log.debug("ℹ updated \(pool.count) pool, \(listeners.count) listeners")
+        _ = removedListener; _ = removedPoolItem
+
+//        Log.debug("⛔️ listener objectID", removedListener?.objectID, "pool item", removedPoolItem)
+//        Log.debug("ℹ updated \(pool.count) pool, \(listeners.count) listeners")
     }
 
     func removeAll() {

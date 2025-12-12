@@ -34,7 +34,7 @@ final class C_AudioObjectPropertyListener: NSObject, @unchecked Sendable {
 
     deinit {
         cListener.delegate = nil
-        Log.debug("- { \(self) (\(objectID)) }")
+        // Log.debug("- { \(self) (\(objectID)) }")
     }
 
     func start() throws {
